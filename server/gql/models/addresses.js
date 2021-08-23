@@ -39,7 +39,7 @@ const AddressConnection = createConnection({
   nodeType: Address,
   before: (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
-    if (context?.supplier?.id) {
+    if (context?.users?.id) {
       findOptions.include.push({
         model: db.users,
         where: {
@@ -48,11 +48,20 @@ const AddressConnection = createConnection({
       });
     }
 
-    if (context?.store?.id) {
+    if (context?.cabs?.id) {
       findOptions.include.push({
         model: db.cabs,
         where: {
           id: context.cabs.id
+        }
+      });
+    }
+
+    if (context?.bookings?.id) {
+      findOptions.include.push({
+        model: db.bookings,
+        where: {
+          id: context.booking.id
         }
       });
     }

@@ -5,6 +5,7 @@ import { timestamps } from './timestamps';
 import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
+import { addressQueries } from './addresses';
 
 const { nodeInterface } = getNode();
 
@@ -22,7 +23,12 @@ const Booking = new GraphQLObjectType({
     cabId: { type: GraphQLInt },
     email: { type: GraphQLNonNull(GraphQLString) },
     addressId: { type: GraphQLInt },
-    ...timestamps
+    ...timestamps,
+    addresses: {
+      ...addressQueries.list,
+      resolve: (source, args, context, info) =>
+      addressQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+    }
   })
 });
 

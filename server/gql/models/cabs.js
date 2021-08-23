@@ -19,7 +19,12 @@ const Cab = new GraphQLObjectType({
     ...cabFields,
     id: { type: GraphQLNonNull(GraphQLID) },
     addressId: { type: GraphQLInt},
-    ...timestamps
+    ...timestamps,
+    addresses: {
+      ...addressQueries.list,
+      resolve: (source, args, context, info) =>
+      addressQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+    }
   })
 });
 
