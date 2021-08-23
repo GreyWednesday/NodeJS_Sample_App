@@ -8,27 +8,25 @@ import { sequelizedWhere } from '@database/dbUtils';
 
 const { nodeInterface } = getNode();
 
-export const userFields = {
-  firstName: { type: GraphQLNonNull(GraphQLString) },
-  lastName: { type: GraphQLNonNull(GraphQLString) }
+export const cabFields = {
+  name: { type: GraphQLNonNull(GraphQLString) },
 };
 
-const User = new GraphQLObjectType({
-  name: 'user',
+const Cab = new GraphQLObjectType({
+  name: 'Cab',
   interfaces: [nodeInterface],
   fields: () => ({
-    ...userFields,
+    ...cabFields,
     id: { type: GraphQLNonNull(GraphQLID) },
-    email: { type: GraphQLNonNull(GraphQLString) },
     addressId: { type: GraphQLInt},
     ...timestamps
   })
 });
 
-const UserConnection = createConnection({
-  name: 'users',
-  target: db.users,
-  nodeType: User,
+const CabConnection = createConnection({
+  name: 'cabs',
+  target: db.cabs,
+  nodeType: Cab,
   before: (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
     findOptions.where = sequelizedWhere(findOptions.where, args.where);
@@ -37,28 +35,28 @@ const UserConnection = createConnection({
   ...totalConnectionFields
 });
 
-export { User };
+export { Cab };
 
-export const userQueries = {
+export const cabQueries = {
   args: {
     id: {
       type: GraphQLNonNull(GraphQLInt)
     }
   },
   query: {
-    type: User
+    type: Cab
   },
   list: {
-    ...UserConnection,
-    resolve: UserConnection.resolve,
-    type: UserConnection.connectionType,
-    args: UserConnection.connectionArgs
+    ...CabConnection,
+    resolve: CabConnection.resolve,
+    type: CabConnection.connectionType,
+    args: CabConnection.connectionArgs
   },
-  model: db.users
+  model: db.cabs
 };
 
-export const userMutations = {
-  args: userFields,
-  type: User,
-  model: db.users
+export const cabMutations = {
+  args: cabFields,
+  type: Cab,
+  model: db.cabs
 };

@@ -57,15 +57,6 @@ export function model(sequelize, DataTypes) {
     paranoid: true,
     timestamps: true
   });
-  addresses.associate = function(models) {
-    addresses.hasMany(models.suppliers, {
-      sourceKey: 'id'
-    });
-
-    addresses.hasMany(models.stores, {
-      sourceKey: 'id'
-    });
-  };
 
   return addresses;
 }

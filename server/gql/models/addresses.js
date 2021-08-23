@@ -1,10 +1,8 @@
 import { GraphQLFloat, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
 import { getNode } from '@gql/node';
 import { createConnection } from 'graphql-sequelize';
-import { supplierQueries } from './suppliers';
 import { timestamps } from './timestamps';
 import db from '@database/models';
-import { storeQueries } from '@gql/models/stores';
 import { totalConnectionFields } from '@utils/index';
 
 const { nodeInterface } = getNode();
@@ -32,16 +30,6 @@ const Address = new GraphQLObjectType({
   fields: () => ({
     ...addressFields,
     ...timestamps,
-    suppliers: {
-      ...supplierQueries.list,
-      resolve: (source, args, context, info) =>
-        supplierQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
-    },
-    stores: {
-      ...storeQueries.list,
-      resolve: (source, args, context, info) =>
-        storeQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
-    }
   })
 });
 
@@ -53,18 +41,18 @@ const AddressConnection = createConnection({
     findOptions.include = findOptions.include || [];
     if (context?.supplier?.id) {
       findOptions.include.push({
-        model: db.suppliers,
+        model: db.users,
         where: {
-          id: context.supplier.id
+          id: context.users.id
         }
       });
     }
 
     if (context?.store?.id) {
       findOptions.include.push({
-        model: db.stores,
+        model: db.cabs,
         where: {
-          id: context.store.id
+          id: context.cabs.id
         }
       });
     }

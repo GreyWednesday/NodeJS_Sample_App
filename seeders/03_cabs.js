@@ -4,9 +4,9 @@ module.exports = {
     const range = require('lodash/range');
     const arr = range(1, 2000).map((value, index) => ({
       name: faker.company.companyName(),
-      address_id: 1 + parseInt(Math.random() * 1999)
+      address_id: 1 + parseInt(Math.random() * 1999),
     }));
-    return queryInterface.bulkInsert('stores', arr, {});
+    return queryInterface.bulkInsert('cabs', arr, {});
   },
-  down: queryInterface => queryInterface.bulkDelete('stores', null, {})
+  down: queryInterface => queryInterface.bulkDelete('cabs', null, {})
 };

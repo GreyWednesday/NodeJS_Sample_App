@@ -8,27 +8,28 @@ import { sequelizedWhere } from '@database/dbUtils';
 
 const { nodeInterface } = getNode();
 
-export const userFields = {
-  firstName: { type: GraphQLNonNull(GraphQLString) },
-  lastName: { type: GraphQLNonNull(GraphQLString) }
+export const bookingFields = {
+  status: { type: GraphQLNonNull(GraphQLString) }
 };
 
-const User = new GraphQLObjectType({
-  name: 'user',
+const Booking = new GraphQLObjectType({
+  name: 'Booking',
   interfaces: [nodeInterface],
   fields: () => ({
-    ...userFields,
+    ...bookingFields,
     id: { type: GraphQLNonNull(GraphQLID) },
+    userId: { type: GraphQLInt },
+    cabId: { type: GraphQLInt },
     email: { type: GraphQLNonNull(GraphQLString) },
-    addressId: { type: GraphQLInt},
+    addressId: { type: GraphQLInt },
     ...timestamps
   })
 });
 
-const UserConnection = createConnection({
-  name: 'users',
-  target: db.users,
-  nodeType: User,
+const BookingConnection = createConnection({
+  name: 'bookings',
+  target: db.bookings,
+  nodeType: Booking,
   before: (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
     findOptions.where = sequelizedWhere(findOptions.where, args.where);
@@ -37,28 +38,28 @@ const UserConnection = createConnection({
   ...totalConnectionFields
 });
 
-export { User };
+export { Booking };
 
-export const userQueries = {
+export const bookingQueries = {
   args: {
     id: {
       type: GraphQLNonNull(GraphQLInt)
     }
   },
   query: {
-    type: User
+    type: Booking
   },
   list: {
-    ...UserConnection,
-    resolve: UserConnection.resolve,
-    type: UserConnection.connectionType,
-    args: UserConnection.connectionArgs
+    ...BookingConnection,
+    resolve: BookingConnection.resolve,
+    type: BookingConnection.connectionType,
+    args: BookingConnection.connectionArgs
   },
-  model: db.users
+  model: db.bookings
 };
 
-export const userMutations = {
-  args: userFields,
-  type: User,
-  model: db.users
+export const bookingMutations = {
+  args: bookingFields,
+  type: Booking,
+  model: db.bookings
 };

@@ -14,6 +14,7 @@ import cluster from 'cluster';
 import os from 'os';
 import authenticateToken from '@middleware/authenticate/index';
 import 'source-map-support/register';
+import axios from 'axios';
 
 const totalCPUs = os.cpus().length;
 
@@ -34,7 +35,7 @@ export const init = () => {
 
   app.use(express.json());
   app.use(rTracer.expressMiddleware());
-  app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
+  //app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
   app.use(
     '/graphql',
     graphqlHTTP({
@@ -66,11 +67,36 @@ export const init = () => {
   };
   createBodyParsedRoutes([signUpRoute, signInRoute]);
 
+  app.use('/requestCabs/:USERID', (req, res) => {
+    const userId = req.params.USERID;
+
+    axios({
+      url: 'http://localhost:9000/graphql',
+      method: 'post',
+      data: {
+        query: `
+        query findCabsNearMe {
+          users(limit: 5, offset: 0, where: {id: ${userId}}) {
+            edges {
+              cursor
+              node {
+                address_id
+              }
+            }
+          }
+        }`
+      }
+    }).then(result => {
+      console.log(result.data);
+    });
+  });
+
   app.use('/', (req, res) => {
     const message = 'Service up and running!';
     logger().info(message);
     res.json(message);
   });
+
   /* istanbul ignore next */
   if (!isTestEnv()) {
     app.listen(9000);

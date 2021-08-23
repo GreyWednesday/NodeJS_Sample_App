@@ -11,6 +11,7 @@ module.exports = {
         last_name: faker.name.lastName(),
         email: faker.internet.email(),
         password: md5('wednesdaySolution'),
+        address_id: 1 + parseInt(Math.random() * 1999),
         created_at: faker.date.recent(createdBefore)
       };
     });
