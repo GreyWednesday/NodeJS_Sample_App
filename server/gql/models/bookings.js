@@ -6,6 +6,8 @@ import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
 import { addressQueries } from './addresses';
+import { userQueries } from './users';
+import { cabQueries } from './cabs';
 
 const { nodeInterface } = getNode();
 
@@ -25,9 +27,19 @@ const Booking = new GraphQLObjectType({
     addressId: { type: GraphQLInt },
     ...timestamps,
     addresses: {
-      ...addressQueries.list,
+      ...addressQueries.query,
       resolve: (source, args, context, info) =>
-      addressQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+      addressQueries.query.resolve(source, args, { ...context, bookings: source.dataValues }, info)
+    },
+    users: {
+      ...userQueries.query,
+      resolve: (source, args, context, info) =>
+      userQueries.query.resolve(source, args, {...context, bookings: source.dataValues}, info)
+    },
+    cabs: {
+      ...cabQueries.query,
+      resolve: (source, args, context, info) =>
+      cabQueries.query.resolve(source, args, { ...context, bookings: source.dataValues }, info)
     }
   })
 });

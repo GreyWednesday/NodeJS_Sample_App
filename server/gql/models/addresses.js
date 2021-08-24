@@ -1,9 +1,12 @@
 import { GraphQLFloat, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
 import { getNode } from '@gql/node';
-import { createConnection } from 'graphql-sequelize';
+import { createConnection, resolver } from 'graphql-sequelize';
 import { timestamps } from './timestamps';
 import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
+import { userQueries } from './users';
+import { cabQueries } from './cabs';
+import { bookingQueries } from './bookings';
 
 const { nodeInterface } = getNode();
 export const addressFields = {
@@ -30,6 +33,21 @@ const Address = new GraphQLObjectType({
   fields: () => ({
     ...addressFields,
     ...timestamps,
+    users: {
+      ...userQueries.list,
+      resolve: (source, args, context, info) =>
+        userQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+    },
+    cabs: {
+      ...cabQueries.list,
+      resolve: (source, args, context, info) =>
+        cabQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+    },
+    bookings: {
+      ...bookingQueries.list,
+      resolve: (source, args, context, info) =>
+        bookingQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+    }
   })
 });
 
@@ -80,7 +98,32 @@ export const addressQueries = {
     }
   },
   query: {
-    type: Address
+    type: Address,
+    resolve: resolver(db.addresses, {
+      before: (findOptions, args, context) => {
+        findOptions.include = findOptions.include || [];
+        findOptions.where = findOptions.where || {};
+        if (context?.users?.id) {
+          findOptions.where = {
+            ...findOptions.where,
+            id: context?.users?.addressId
+          };
+        }
+        if (context?.cabs?.id) {
+          findOptions.where = {
+            ...findOptions.where,
+            id: context?.cabs?.addressId
+          }
+        }
+        if (context?.bookings?.id) {
+          findOptions.where = {
+            ...findOptions.where,
+            id: context?.bookings?.addressId
+          }
+        }
+        return findOptions;
+      }
+    })
   },
   list: {
     ...AddressConnection,
