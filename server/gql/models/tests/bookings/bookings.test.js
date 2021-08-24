@@ -4,17 +4,17 @@ import { createFieldsWithType, expectSameTypeNameOrKind } from '@utils/testUtils
 import { QueryRoot } from '../../../queries';
 import { MutationRoot } from '../../../mutations';
 import { timestamps } from '@gql/models/timestamps';
-import { storeFields } from '@gql/models/stores';
+import { bookingFields } from '@gql/models/bookings';
 
 const schema = new GraphQLSchema({ query: QueryRoot, mutation: MutationRoot });
 
 let fields = [];
 
-fields = createFieldsWithType({ ...storeFields, ...timestamps });
+fields = createFieldsWithType({ ...bookingFields, ...timestamps });
 
 const query = `
   {
-    __type(name: "Store") {
+    __type(name: "booking") {
         name
         kind
         fields {
@@ -27,18 +27,11 @@ const query = `
       }    
   }
 `;
-describe('Store introspection tests', () => {
+describe('User introspection tests', () => {
   it('should have the correct fields and types', async () => {
     const result = await graphqlSync({ schema, source: query });
-    const storeFieldTypes = get(result, 'data.__type.fields');
-    const hasCorrectFieldTypes = expectSameTypeNameOrKind(storeFieldTypes, fields);
+    const bookingFieldTypes = get(result, 'data.__type.fields');
+    const hasCorrectFieldTypes = expectSameTypeNameOrKind(bookingFieldTypes, fields);
     expect(hasCorrectFieldTypes).toBeTruthy();
-  });
-  it('should have a store connection', async () => {
-    const result = await graphqlSync({ schema, source: query });
-    const addressFieldTypes = get(result, 'data.__type.fields');
-    const storeField = addressFieldTypes.find(field => field.name === 'products');
-    expect(storeField.type.kind).toBe('OBJECT');
-    expect(storeField.type.name).toBe('productsConnection');
   });
 });

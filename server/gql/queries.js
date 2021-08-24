@@ -13,9 +13,9 @@ const { nodeField, nodeTypeMapper } = getNode();
 
 const DB_TABLES = {
   address: addressQueries,
-  users: userQueries,
-  bookings: bookingQueries,
-  cabs: cabQueries
+  user: userQueries,
+  booking: bookingQueries,
+  cab: cabQueries
 };
 
 export const addQueries = () => {

@@ -19,47 +19,24 @@ export const usersTable = range(1, 10).map((_, index) => ({
   lastName: faker.name.lastName(),
   email: faker.internet.email(),
   password: md5(faker.internet.password()),
-  created_at: faker.date.recent(createdBefore)
+  addressId: (index + 1).toString(),
+  createdAt: faker.date.recent(createdBefore)
 }));
 
-export const productsTable = range(1, 10).map((_, index) => ({
+export const cabsTable = range(1, 10).map((_, index) => ({
   id: (index + 1).toString(),
-  name: faker.commerce.productName(),
-  category: faker.commerce.department(),
-  amount: faker.commerce.price()
-}));
+  name: faker.name.firstName(),
+  addressId: (index + 1).toString(),
+  createdAt: faker.date.recent(createdBefore)
+}))
 
-export const purchasedProductsTable = range(1, 10).map((_, index) => ({
+export const bookingsTable = range(1, 10).map((_, index) => ({
   id: (index + 1).toString(),
-  productId: (index + 1).toString(),
-  price: faker.commerce.price(),
-  discount: faker.datatype.number(20),
-  deliveryDate: faker.date.past(1)
-}));
-
-export const storesTable = range(1, 10).map((_, index) => ({
-  id: (index + 1).toString(),
-  name: faker.company.companyName(),
-  addressId: index + 1
-}));
-
-export const storeProductsTable = range(1, 10).map((_, index) => ({
-  id: (index + 1).toString(),
-  productId: index + 1,
-  storeId: index + 1
-}));
-
-export const suppliersTable = range(1, 10).map((_, index) => ({
-  id: (index + 1).toString(),
-  name: faker.company.companyName(),
-  addressId: index + 1
-}));
-
-export const supplierProductsTable = range(1, 10).map((_, index) => ({
-  id: (index + 1).toString(),
-  productId: index + 1,
-  supplierId: index + 1
-}));
+  userId: (index + 1).toString(),
+  createdAt: faker.date.recent(createdBefore),
+  cabId: (index + 1).toString(),
+  status: faker.commerce.color()
+}))
 
 export const DB_ENV = {
   POSTGRES_HOST: 'host',

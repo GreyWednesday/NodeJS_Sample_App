@@ -12,34 +12,27 @@ import { cabQueries } from './cabs';
 const { nodeInterface } = getNode();
 
 export const bookingFields = {
+  userId: { type: GraphQLInt },
+  cabId: { type: GraphQLInt },
   status: { type: GraphQLNonNull(GraphQLString) }
 };
 
 const Booking = new GraphQLObjectType({
-  name: 'Booking',
+  name: 'booking',
   interfaces: [nodeInterface],
   fields: () => ({
     ...bookingFields,
     id: { type: GraphQLNonNull(GraphQLID) },
-    userId: { type: GraphQLInt },
-    cabId: { type: GraphQLInt },
-    email: { type: GraphQLNonNull(GraphQLString) },
-    addressId: { type: GraphQLInt },
     ...timestamps,
-    addresses: {
-      ...addressQueries.query,
-      resolve: (source, args, context, info) =>
-      addressQueries.query.resolve(source, args, { ...context, bookings: source.dataValues }, info)
-    },
     users: {
       ...userQueries.query,
       resolve: (source, args, context, info) =>
-      userQueries.query.resolve(source, args, {...context, bookings: source.dataValues}, info)
+        userQueries.query.resolve(source, args, { ...context, bookings: source.dataValues }, info)
     },
     cabs: {
       ...cabQueries.query,
       resolve: (source, args, context, info) =>
-      cabQueries.query.resolve(source, args, { ...context, bookings: source.dataValues }, info)
+        cabQueries.query.resolve(source, args, { ...context, bookings: source.dataValues }, info)
     }
   })
 });

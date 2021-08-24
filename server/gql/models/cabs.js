@@ -11,20 +11,20 @@ const { nodeInterface } = getNode();
 
 export const cabFields = {
   name: { type: GraphQLNonNull(GraphQLString) },
+  addressId: { type: GraphQLInt }
 };
 
 const Cab = new GraphQLObjectType({
-  name: 'Cab',
+  name: 'cab',
   interfaces: [nodeInterface],
   fields: () => ({
     ...cabFields,
     id: { type: GraphQLNonNull(GraphQLID) },
-    addressId: { type: GraphQLInt},
     ...timestamps,
     address: {
       ...addressQueries.query,
       resolve: (source, args, context, info) =>
-      addressQueries.query.resolve(source, args, { ...context, cabs: source.dataValues }, info)
+        addressQueries.query.resolve(source, args, { ...context, cabs: source.dataValues }, info)
     }
   })
 });
@@ -59,7 +59,7 @@ export const cabQueries = {
           findOptions.where = {
             ...findOptions.where,
             id: context?.bookings?.cabId
-          }
+          };
         }
         return findOptions;
       }

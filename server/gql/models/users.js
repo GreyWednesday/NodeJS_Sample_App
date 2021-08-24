@@ -11,7 +11,10 @@ const { nodeInterface } = getNode();
 
 export const userFields = {
   firstName: { type: GraphQLNonNull(GraphQLString) },
-  lastName: { type: GraphQLNonNull(GraphQLString) }
+  lastName: { type: GraphQLNonNull(GraphQLString) },
+  email: { type: GraphQLNonNull(GraphQLString) },
+  password: { type: GraphQLNonNull(GraphQLString) },
+  addressId: { type: GraphQLInt }
 };
 
 const User = new GraphQLObjectType({
@@ -20,13 +23,11 @@ const User = new GraphQLObjectType({
   fields: () => ({
     ...userFields,
     id: { type: GraphQLNonNull(GraphQLID) },
-    email: { type: GraphQLNonNull(GraphQLString) },
-    addressId: { type: GraphQLInt},
     ...timestamps,
     addresses: {
       ...addressQueries.query,
       resolve: (source, args, context, info) =>
-      addressQueries.query.resolve(source, args, { ...context, users: source.dataValues }, info)
+        addressQueries.query.resolve(source, args, { ...context, users: source.dataValues }, info)
     }
   })
 });
@@ -61,7 +62,7 @@ export const userQueries = {
           findOptions.where = {
             ...findOptions.where,
             id: context?.bookings?.userId
-          }
+          };
         }
         return findOptions;
       }

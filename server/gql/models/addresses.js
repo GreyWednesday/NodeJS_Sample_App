@@ -115,12 +115,6 @@ export const addressQueries = {
             id: context?.cabs?.addressId
           }
         }
-        if (context?.bookings?.id) {
-          findOptions.where = {
-            ...findOptions.where,
-            id: context?.bookings?.addressId
-          }
-        }
         return findOptions;
       }
     })

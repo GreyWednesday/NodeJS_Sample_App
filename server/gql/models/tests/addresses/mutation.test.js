@@ -28,20 +28,6 @@ describe('Address graphQL-server-DB mutation tests', () => {
       createdAt
       updatedAt
       deletedAt
-      suppliers {
-        edges {
-          node {
-            name
-          }
-        }
-      }
-      stores {
-        edges {
-          node {
-            name
-          }
-        }
-      }
     }
   }
 `;
@@ -100,7 +86,6 @@ describe('Address graphQL-server-DB mutation tests', () => {
     const result = get(response, 'body.data.updateAddress');
     expect(result).toBeTruthy();
     expect(dbClient.models.addresses.update.mock.calls.length).toBe(1);
-    console.log(dbClient.models.addresses.update.mock.calls[0][0]);
     expect(dbClient.models.addresses.update.mock.calls[0][0]).toEqual({
       id: addressesTable[0].id.toString(),
       address1: addressesTable[0].address1,
