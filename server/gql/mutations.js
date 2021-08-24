@@ -9,7 +9,7 @@ import { cabMutations } from './models/cabs';
 
 const shouldNotAddMutation = (type, table) => {
   if (type === MUTATION_TYPE.CREATE) {
-    const negateTablesList = ['users'];
+    const negateTablesList = [];
     return !negateTablesList.includes(table);
   }
 
@@ -19,10 +19,12 @@ const shouldNotAddMutation = (type, table) => {
   }
 
   if (type === MUTATION_TYPE.DELETE) {
-    const negateTablesList = ['users'];
+    const negateTablesList = [];
     return !negateTablesList.includes(table);
   }
 };
+
+
 
 export const createResolvers = model => ({
   createResolver: (parent, args, context, resolveInfo) => model.create(args),
