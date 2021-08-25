@@ -56,9 +56,13 @@ export function model(sequelize, DataTypes) {
         timestamps: true
     });
     bookings.associate = function(models) {
-        bookings.belongsTo(models.addresses, {
+        bookings.belongsTo(models.users, {
             targetKey: 'id',
-            sourceKey: 'address_id'
+            sourceKey: 'user_id'
+        });
+        bookings.belongsTo(models.cabs, {
+            targetKey: 'id',
+            sourceKey: 'cab_id'
         });
     };
     return bookings;

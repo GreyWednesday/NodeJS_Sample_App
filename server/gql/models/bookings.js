@@ -5,9 +5,9 @@ import { timestamps } from './timestamps';
 import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
-import { addressQueries } from './addresses';
 import { userQueries } from './users';
 import { cabQueries } from './cabs';
+import { userArgs } from './users';
 
 const { nodeInterface } = getNode();
 
@@ -42,8 +42,19 @@ const BookingConnection = createConnection({
   target: db.bookings,
   nodeType: Booking,
   before: (findOptions, args, context) => {
-    findOptions.include = findOptions.include || [];
-    findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    findOptions.include = findOptions.include || []; 
+
+    if (args?.userId) {
+      if (args?.where) {
+        args.where['userId'] = args.userId;
+      } else {
+        args.where = { userId: args.userId };
+      }
+      findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    } else {
+      findOptions.where = sequelizedWhere(findOptions.where, args.where)
+    }
+
     return findOptions;
   },
   ...totalConnectionFields
@@ -58,13 +69,17 @@ export const bookingQueries = {
     }
   },
   query: {
-    type: Booking
+    type: Booking,
+    resolve: BookingConnection.resolve,
   },
   list: {
     ...BookingConnection,
     resolve: BookingConnection.resolve,
     type: BookingConnection.connectionType,
-    args: BookingConnection.connectionArgs
+    args: {
+      ...BookingConnection.connectionArgs,
+      ...userArgs
+    }
   },
   model: db.bookings
 };

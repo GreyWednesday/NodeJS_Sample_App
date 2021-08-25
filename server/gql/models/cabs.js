@@ -6,6 +6,7 @@ import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
 import { addressQueries } from './addresses';
+import { userArgs } from './users';
 
 const { nodeInterface } = getNode();
 
@@ -33,10 +34,39 @@ const CabConnection = createConnection({
   name: 'cabs',
   target: db.cabs,
   nodeType: Cab,
-  before: (findOptions, args, context) => {
+  before: async (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
-    findOptions.where = sequelizedWhere(findOptions.where, args.where);
+
+    if (args?.userId) {
+      const user = await db.users.findOne({
+        where: { id: args.userId }
+      });
+      const currentLocation = user.dataValues.addressId;
+      if (args?.where) {
+        args.where['addressId'] = currentLocation;
+      } else {
+        args.where = { addressId: currentLocation };
+      }
+      findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    } else {
+      findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    }
+
     return findOptions;
+  },
+  after: async context => {
+    const userId = context.args.userId;
+    const cabId = context.edges[0].node.id;
+    const status = 'Booked';
+    await db.bookings.create({
+      userId,
+      cabId,
+      status
+    });
+    //console.log(result.dataValues);
+    //context.edges[2] = {cursor: context.edges[0].cursor, node: result.dataValues};
+    //console.log(context)
+    return context;
   },
   ...totalConnectionFields
 });
@@ -69,7 +99,10 @@ export const cabQueries = {
     ...CabConnection,
     resolve: CabConnection.resolve,
     type: CabConnection.connectionType,
-    args: CabConnection.connectionArgs
+    args: {
+      ...CabConnection.connectionArgs,
+      ...userArgs
+    }
   },
   model: db.cabs
 };

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { response } from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { GraphQLSchema } from 'graphql';
 import dotenv from 'dotenv';
@@ -12,9 +12,15 @@ import { isTestEnv, logger, unless } from '@utils/index';
 import { signUpRoute, signInRoute } from '@server/auth';
 import cluster from 'cluster';
 import os from 'os';
-import authenticateToken from '@middleware/authenticate/index';
 import 'source-map-support/register';
-import axios from 'axios';
+// import redis from "redis";
+// import session from 'express-session';
+// import connectRedis from 'connect-redis';
+
+let superagent;
+if (typeof window !== 'undefined') {
+  superagent = require('superagent');
+}
 
 const totalCPUs = os.cpus().length;
 
@@ -33,9 +39,29 @@ export const init = () => {
     app = express();
   }
 
+  // const RedisStore = connectRedis(session);
+  // const redisClient = redis.createClient();
+
   app.use(express.json());
   app.use(rTracer.expressMiddleware());
+  // app.use(
+  //   session({
+  //     name: 'qid',
+  //     store: new RedisStore({ client: redisClient, disableTouch: true }),
+  //     cookie: {
+  //       maxAge: 1000 * 60 * 60 * 60 * 24,
+  //       httpOnly: true,
+  //       secure: true,
+  //       sameSite: 'lax'
+  //     },
+  //     saveUninitialized: false,
+  //     secret: 'qwertyuiop',
+  //     resave: false
+  //   })
+  // );
+
   //app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
+
   app.use(
     '/graphql',
     graphqlHTTP({
@@ -69,26 +95,30 @@ export const init = () => {
 
   app.use('/requestCabs/:USERID', (req, res) => {
     const userId = req.params.USERID;
-
-    axios({
-      url: 'http://localhost:9000/graphql',
-      method: 'post',
-      data: {
-        query: `
-        query findCabsNearMe {
-          users(limit: 5, offset: 0, where: {id: ${userId}}) {
-            edges {
-              cursor
-              node {
-                address_id
-              }
-            }
+    const query = `query findCabsNearMe {
+      users(limit: 5, offset: 0, where: {id: ${userId}}) {
+        edges {
+          cursor
+          node {
+            address_id
           }
-        }`
+        }
       }
-    }).then(result => {
-      console.log(result.data);
-    });
+    }`;
+    if (superagent !== undefined) {
+      console.log(typeof superagent);
+      let output;
+      superagent
+        .post('/graphql')
+        .send({ query })
+        .set('Accept', 'application/json')
+        .end((error, response) => {
+          output = response;
+        });
+      res.json(output);
+    } else {
+      res.send('<h1>DEBUGGING</h1>');
+    }
   });
 
   app.use('/', (req, res) => {
