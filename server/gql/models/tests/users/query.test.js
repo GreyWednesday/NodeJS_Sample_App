@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import { addressesTable } from '@server/utils/testUtils/mockData';
 import { getResponse, mockDBClient, resetAndMockDB } from '@utils/testUtils';
 
-describe('User graphQL-server-DB query tests', () => {
+describe('Users graphQL-server-DB query tests', () => {
   const id = "1";
   const userQuery = `
   query {

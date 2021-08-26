@@ -36,7 +36,9 @@ export const bookingsTable = range(1, 10).map((_, index) => ({
   userId: (index + 1).toString(),
   createdAt: faker.date.recent(createdBefore),
   cabId: (index + 1).toString(),
-  status: faker.commerce.color()
+  status: faker.commerce.color(),
+  startingPoint: (index + 1).toString(),
+  destination: (index + 1).toString()
 }));
 
 export const DB_ENV = {

@@ -1,18 +1,22 @@
 import get from 'lodash/get';
 import { getResponse, mockDBClient, resetAndMockDB } from '@utils/testUtils';
 
-describe('Users graphQL-server-DB mutation tests', () => {
+describe('Bookings graphQL-server-DB mutation tests', () => {
   const createBookingMut = `
     mutation {
       createBookings (
       userId: 1
       cabId: 1
       status: "ABC"
+      startingPoint: 123
+      destination: 234
       ) {
         id
         userId
         cabId
         status
+        startingPoint
+        destination
         createdAt
         updatedAt
         deletedAt
@@ -29,7 +33,9 @@ describe('Users graphQL-server-DB mutation tests', () => {
         id: "1",
         userId: 1,
         cabId: 1,
-        status: "ABC"
+        status: "ABC",
+        startingPoint: 123,
+        destination: 234
       });
       done();
     });

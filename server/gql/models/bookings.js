@@ -17,11 +17,21 @@ export const bookingFields = {
   status: { type: GraphQLNonNull(GraphQLString) }
 };
 
+const locationArgs = {
+  startingPoint: {
+    type: GraphQLInt
+  },
+  destination: {
+    type: GraphQLNonNull(GraphQLInt)
+  }
+};
+
 const Booking = new GraphQLObjectType({
   name: 'booking',
   interfaces: [nodeInterface],
   fields: () => ({
     ...bookingFields,
+    ...locationArgs,
     id: { type: GraphQLNonNull(GraphQLID) },
     ...timestamps,
     users: {
@@ -43,7 +53,7 @@ const BookingConnection = createConnection({
   nodeType: Booking,
   before: (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
-    
+
     if (args?.userId) {
       if (args?.where) {
         args.where['userId'] = args.userId;
@@ -52,7 +62,7 @@ const BookingConnection = createConnection({
       }
       findOptions.where = sequelizedWhere(findOptions.where, args.where);
     } else {
-      findOptions.where = sequelizedWhere(findOptions.where, args.where)
+      findOptions.where = sequelizedWhere(findOptions.where, args.where);
     }
 
     return findOptions;
@@ -70,7 +80,7 @@ export const bookingQueries = {
   },
   query: {
     type: Booking,
-    resolve: BookingConnection.resolve,
+    resolve: BookingConnection.resolve
   },
   list: {
     ...BookingConnection,
@@ -85,7 +95,10 @@ export const bookingQueries = {
 };
 
 export const bookingMutations = {
-  args: bookingFields,
+  args: {
+    ...bookingFields,
+    ...locationArgs
+  },
   type: Booking,
   model: db.bookings
 };

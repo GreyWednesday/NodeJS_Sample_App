@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import { usersTable, cabsTable } from '@server/utils/testUtils/mockData';
 import { getResponse, mockDBClient, resetAndMockDB } from '@utils/testUtils';
 
-describe('Booking graphQL-server-DB query tests', () => {
+describe('Bookings graphQL-server-DB query tests', () => {
   let id = "1";
   const bookingQuery = `
   query {
@@ -12,6 +12,8 @@ describe('Booking graphQL-server-DB query tests', () => {
       createdAt
       cabId
       status
+      startingPoint
+      destination
       users {
         id
       }
@@ -31,6 +33,8 @@ describe('Booking graphQL-server-DB query tests', () => {
           id
           userId
           cabId
+          startingPoint
+          destination
         }
       }
     }

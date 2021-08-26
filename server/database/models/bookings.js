@@ -15,6 +15,37 @@ export function getAttributes(sequelize, DataTypes) {
                 key: 'id'
             }
         },
+        cabId: {
+            field: 'cab_id',
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'cabs',
+                key: 'id'
+            }
+        },
+        startingPoint: {
+            field: 'starting_point',
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'addresses',
+                key: 'id'
+            }
+        },
+        destination: {
+            field: 'destination',
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'addresses',
+                key: 'id'
+            }
+        },
+        status: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
         createdAt: {
             field: 'created_at',
             type: DataTypes.DATE,
@@ -30,19 +61,6 @@ export function getAttributes(sequelize, DataTypes) {
             field: 'deleted_at',
             type: DataTypes.DATE,
             allowNull: true
-        },
-        cabId: {
-            field: 'cab_id',
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'cabs',
-                key: 'id'
-            }
-        },
-        status: {
-            type: DataTypes.TEXT,
-            allowNull: false
         }
     }
 }

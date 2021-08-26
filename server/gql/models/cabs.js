@@ -16,6 +16,15 @@ export const cabFields = {
   bookingId: { type: GraphQLInt }
 };
 
+const cabLocationArgs = {
+  startingPoint: {
+    type: GraphQLInt
+  },
+  destination: {
+    type: GraphQLInt
+  }
+}
+
 const Cab = new GraphQLObjectType({
   name: 'cab',
   interfaces: [nodeInterface],
@@ -37,12 +46,16 @@ const CabConnection = createConnection({
   nodeType: Cab,
   before: async (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
-
+    let currentLocation;
     if (args?.userId) {
-      const user = await db.users.findOne({
-        where: { id: args.userId }
-      });
-      const currentLocation = user.dataValues.addressId;
+      if (!args?.startingPoint) {
+        const user = await db.users.findOne({
+          where: { id: args.userId }
+        });
+        currentLocation = user.dataValues.addressId;
+      } else {
+        currentLocation = args?.startingPoint
+      }
       if (args?.where) {
         args.where.addressId = currentLocation;
       } else {
@@ -56,25 +69,32 @@ const CabConnection = createConnection({
     return findOptions;
   },
   after: async (context, args) => {
-    if (args?.userId) {
-      const userId = context?.args?.userId;
-      const cabId = context?.edges[0]?.node?.id;
-      const status = 'Booked';
-      if (userId && cabId) {
-        const result = await db.bookings.create({
-          userId,
-          cabId,
-          status
-        });
-
-        await db.cabs.update(
-          { bookingId: result?.dataValues ? result.dataValues.id : result[0].id },
-          { where: { id: context?.edges[0]?.node?.dataValues?.id } }
-        );
-
-        context.edges[0].node.dataValues.bookingId = result?.dataValues ? result.dataValues.id : result[0].id;
-        return context;
+    const userId = args?.userId;
+    const cabId = context?.edges[0]?.node?.id;
+    let startingPoint;
+    const destination = args?.destination;
+    const status = 'Booked';
+    let result;
+    if (userId && cabId && destination) {
+      if (args?.userId && !args?.startingPoint) {
+        startingPoint = args.where.addressId;
+      } else {
+        startingPoint = args.startingPoint;
       }
+
+      result = await db.bookings.create({
+        userId,
+        cabId,
+        startingPoint,
+        destination,
+        status
+      });
+
+      await db.cabs.update(
+        { bookingId: result?.dataValues ? result.dataValues.id : result[0].id },
+        { where: { id: context?.edges[0]?.node?.dataValues?.id } }
+      );
+      context.edges[0].node.dataValues.bookingId = result?.dataValues ? result.dataValues.id : result[0].id;
       return context;
     }
     return context;
@@ -112,7 +132,8 @@ export const cabQueries = {
     type: CabConnection.connectionType,
     args: {
       ...CabConnection.connectionArgs,
-      ...userArgs
+      ...userArgs,
+      ...cabLocationArgs
     }
   },
   model: db.cabs
