@@ -3,6 +3,7 @@ CREATE TABLE cabs
     id serial NOT NULL PRIMARY KEY,
     name text NOT NULL,
     address_id integer NOT NULL,
+    booking_id integer,
     created_at timestamp
     WITH time zone DEFAULT NOW
     (),

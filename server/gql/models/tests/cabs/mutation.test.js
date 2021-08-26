@@ -7,11 +7,12 @@ describe('Cabs graphQL-server-DB mutation tests', () => {
       createCabs (
         name: "ABC",
         addressId: 1,
+        bookingId: 1
       ) {
         id
         name
         addressId
-        addressId
+        bookingId
         createdAt
         updatedAt
         deletedAt
@@ -25,9 +26,10 @@ describe('Cabs graphQL-server-DB mutation tests', () => {
     await getResponse(createCabMut).then(response => {
       const result = get(response, 'body.data.createCabs');
       expect(result).toMatchObject({
-        id: "1",
-        name: "ABC",
-        addressId: 1
+        id: '1',
+        name: 'ABC',
+        addressId: 1,
+        bookingId: 1
       });
       done();
     });

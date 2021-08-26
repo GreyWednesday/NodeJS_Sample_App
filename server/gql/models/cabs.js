@@ -12,7 +12,8 @@ const { nodeInterface } = getNode();
 
 export const cabFields = {
   name: { type: GraphQLNonNull(GraphQLString) },
-  addressId: { type: GraphQLInt }
+  addressId: { type: GraphQLInt },
+  bookingId: { type: GraphQLInt }
 };
 
 const Cab = new GraphQLObjectType({
@@ -43,7 +44,7 @@ const CabConnection = createConnection({
       });
       const currentLocation = user.dataValues.addressId;
       if (args?.where) {
-        args.where['addressId'] = currentLocation;
+        args.where.addressId = currentLocation;
       } else {
         args.where = { addressId: currentLocation };
       }
@@ -54,18 +55,28 @@ const CabConnection = createConnection({
 
     return findOptions;
   },
-  after: async context => {
-    const userId = context.args.userId;
-    const cabId = context.edges[0].node.id;
-    const status = 'Booked';
-    await db.bookings.create({
-      userId,
-      cabId,
-      status
-    });
-    //console.log(result.dataValues);
-    //context.edges[2] = {cursor: context.edges[0].cursor, node: result.dataValues};
-    //console.log(context)
+  after: async (context, args) => {
+    if (args?.userId) {
+      const userId = context?.args?.userId;
+      const cabId = context?.edges[0]?.node?.id;
+      const status = 'Booked';
+      if (userId && cabId) {
+        const result = await db.bookings.create({
+          userId,
+          cabId,
+          status
+        });
+
+        await db.cabs.update(
+          { bookingId: result?.dataValues ? result.dataValues.id : result[0].id },
+          { where: { id: context?.edges[0]?.node?.dataValues?.id } }
+        );
+
+        context.edges[0].node.dataValues.bookingId = result?.dataValues ? result.dataValues.id : result[0].id;
+        return context;
+      }
+      return context;
+    }
     return context;
   },
   ...totalConnectionFields

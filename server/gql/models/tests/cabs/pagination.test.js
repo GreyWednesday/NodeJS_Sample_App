@@ -11,6 +11,7 @@ describe('Cabs graphQL-server-DB pagination tests', () => {
           id
           name
           addressId
+          bookingId
         }
       }
       pageInfo {
@@ -30,7 +31,8 @@ describe('Cabs graphQL-server-DB pagination tests', () => {
       expect(result).toEqual({
         id: cabsTable[0].id,
         name: cabsTable[0].name,
-        addressId: parseInt(cabsTable[0].addressId)
+        addressId: parseInt(cabsTable[0].addressId),
+        bookingId: parseInt(cabsTable[0].bookingId)
       });
       done();
     });

@@ -27,8 +27,9 @@ export const cabsTable = range(1, 10).map((_, index) => ({
   id: (index + 1).toString(),
   name: faker.name.firstName(),
   addressId: (index + 1).toString(),
+  bookingId: (index + 1).toString(),
   createdAt: faker.date.recent(createdBefore)
-}))
+}));
 
 export const bookingsTable = range(1, 10).map((_, index) => ({
   id: (index + 1).toString(),
@@ -36,7 +37,7 @@ export const bookingsTable = range(1, 10).map((_, index) => ({
   createdAt: faker.date.recent(createdBefore),
   cabId: (index + 1).toString(),
   status: faker.commerce.color()
-}))
+}));
 
 export const DB_ENV = {
   POSTGRES_HOST: 'host',

@@ -1,15 +1,16 @@
 import get from 'lodash/get';
-import { addressesTable } from '@server/utils/testUtils/mockData';
+import { addressesTable, bookingsTable } from '@server/utils/testUtils/mockData';
 import { getResponse, mockDBClient, resetAndMockDB } from '@utils/testUtils';
 
 describe('Cabs graphQL-server-DB query tests', () => {
-  const id = "1";
+  const id = '1';
   const cabQuery = `
   query {
     cab (id: ${id}) {
       id
       name
       addressId
+      bookingId
       createdAt
       address {
         id
@@ -17,6 +18,22 @@ describe('Cabs graphQL-server-DB query tests', () => {
       }
     }
   }
+  `;
+
+  const bookingCabQuery = `
+  query{
+    cabs(limit: 5, offset: 0, userId: 1) {
+      edges {
+        cursor
+        node {
+          id
+          addressId
+          bookingId
+        }
+      }
+    }
+  }
+  
   `;
 
   it('should request for address id related to the user', async done => {
@@ -30,6 +47,19 @@ describe('Cabs graphQL-server-DB query tests', () => {
       // check if addresses.findOne is being called with the correct whereclause
       expect(dbClient.models.addresses.findOne.mock.calls[0][0].where).toEqual({ id: id });
       done();
-    })
-  })
+    });
+  });
+
+  it('should book the neareast cab for user', async done => {
+    const dbClient = mockDBClient();
+    resetAndMockDB(null, {}, dbClient);
+    jest.spyOn(dbClient.models.bookings, 'create').mockImplementation(() => [bookingsTable[0]]);
+    await getResponse(bookingCabQuery).then(response => {
+      expect(get(response, 'body.data.cabs.edges[0]')).toBeTruthy();
+      expect(get(response, 'body.data.cabs.edges[0].node.bookingId')).toBeTruthy();
+      expect(dbClient.models.bookings.create.mock.calls.length).toBe(1);
+      expect(dbClient.models.bookings.findOne({ where: { id: response.body.data.cabs.edges[0].node.bookingId } }));
+      done();
+    });
+  });
 });
