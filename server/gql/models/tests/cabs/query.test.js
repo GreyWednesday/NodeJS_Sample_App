@@ -33,7 +33,6 @@ describe('Cabs graphQL-server-DB query tests', () => {
       }
     }
   }
-  
   `;
 
   it('should request for address id related to the user', async done => {

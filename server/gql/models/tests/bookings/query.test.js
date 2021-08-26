@@ -3,7 +3,7 @@ import { usersTable, cabsTable } from '@server/utils/testUtils/mockData';
 import { getResponse, mockDBClient, resetAndMockDB } from '@utils/testUtils';
 
 describe('Booking graphQL-server-DB query tests', () => {
-  const id = "1";
+  let id = "1";
   const bookingQuery = `
   query {
     booking (id: ${id}) {
@@ -17,6 +17,21 @@ describe('Booking graphQL-server-DB query tests', () => {
       }
       cabs {
         id
+      }
+    }
+  }
+  `;
+
+  const usersBookingQuery = `
+  query{
+    bookings(limit: 5, offset: 0, userId: 2) {
+      edges {
+        cursor
+        node {
+          id
+          userId
+          cabId
+        }
       }
     }
   }
@@ -37,6 +52,15 @@ describe('Booking graphQL-server-DB query tests', () => {
       expect(dbClient.models.cabs.findOne.mock.calls[0][0].where).toEqual({ id: id });
       
       done();
-    })
-  })
+    });
+  });
+
+  it('should display all the bookings of the user', async done => {
+    await getResponse(usersBookingQuery).then(response => {
+      expect(get(response, 'body.data.bookings.edges[0]')).toBeTruthy();
+      expect(get(response, 'body.data.bookings.edges').length).toBe(1);
+      expect(get(response, 'body.data.bookings.edges[0].node.userId')).toBe(2);
+      done();
+    });
+  });
 });

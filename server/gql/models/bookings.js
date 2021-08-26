@@ -42,8 +42,8 @@ const BookingConnection = createConnection({
   target: db.bookings,
   nodeType: Booking,
   before: (findOptions, args, context) => {
-    findOptions.include = findOptions.include || []; 
-
+    findOptions.include = findOptions.include || [];
+    
     if (args?.userId) {
       if (args?.where) {
         args.where['userId'] = args.userId;

@@ -22,16 +22,14 @@ export function getAttributes(sequelize, DataTypes) {
             defaultValue: sequelize.fn('now')
         },
         updatedAt: {
-            field: 'created_at',
+            field: 'updated_at',
             type: DataTypes.DATE,
-            allowNull: true,
-            defaultValue: sequelize.fn('now')
+            allowNull: true
         },
         deletedAt: {
-            field: 'created_at',
+            field: 'deleted_at',
             type: DataTypes.DATE,
-            allowNull: true,
-            defaultValue: sequelize.fn('now')
+            allowNull: true
         },
         cabId: {
             field: 'cab_id',
