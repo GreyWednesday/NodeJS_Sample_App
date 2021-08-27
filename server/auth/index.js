@@ -4,8 +4,8 @@ const getSignedToken = user => new Token({ user }).get();
 
 export const handleSignUp = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body || {};
-    const newUser = await createUserBySignup(firstName, lastName, email, password);
+    const { firstName, lastName, email, password, addressId } = req.body || {};
+    const newUser = await createUserBySignup(firstName, lastName, email, password, addressId);
     res.data = newUser;
     const token = getSignedToken(newUser);
     const { dataValues } = newUser;

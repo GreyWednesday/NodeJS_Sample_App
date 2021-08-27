@@ -6,6 +6,23 @@ import { userMutations } from '@gql/models/users';
 import { bookingMutations } from './models/bookings';
 import { cabMutations } from './models/cabs';
 
+const shouldNotAddMutation = (type, table) => {
+  if (type === MUTATION_TYPE.CREATE) {
+    const negateTablesList = [users];
+    return !negateTablesList.includes(table);
+  }
+
+  if (type === MUTATION_TYPE.UPDATE) {
+    const negateTablesList = [];
+    return !negateTablesList.includes(table);
+  }
+
+  if (type === MUTATION_TYPE.DELETE) {
+    const negateTablesList = [];
+    return !negateTablesList.includes(table);
+  }
+};
+
 export const createResolvers = model => ({
   createResolver: (parent, args, context, resolveInfo) => model.create(args),
   updateResolver: (parent, args, context, resolveInfo) => updateUsingId(model, args),
@@ -25,24 +42,31 @@ export const addMutations = () => {
   Object.keys(DB_TABLES).forEach(table => {
     const { id, ...createArgs } = DB_TABLES[table].args;
 
-    mutations[`create${upperFirst(table)}`] = {
-      ...DB_TABLES[table],
-      args: createArgs,
-      resolve: createResolvers(DB_TABLES[table].model).createResolver
-    };
+    if (shouldNotAddMutation(MUTATION_TYPE.CREATE, table)) {
+      mutations[`create${upperFirst(table)}`] = {
+        ...DB_TABLES[table],
+        args: createArgs,
+        resolve: createResolvers(DB_TABLES[table].model).createResolver
+      };
+    }
 
-    mutations[`update${upperFirst(table)}`] = {
-      ...DB_TABLES[table],
-      resolve: createResolvers(DB_TABLES[table].model).updateResolver
-    };
-
-    mutations[`delete${upperFirst(table)}`] = {
-      type: deletedId,
-      args: {
-        id: { type: GraphQLNonNull(GraphQLInt) }
-      },
-      resolve: createResolvers(DB_TABLES[table].model).deleteResolver
-    };
+    if (shouldNotAddMutation(MUTATION_TYPE.UPDATE, table)) {
+      mutations[`update${upperFirst(table)}`] = {
+        ...DB_TABLES[table],
+        resolve: createResolvers(DB_TABLES[table].model).updateResolver
+      };
+    }
+    
+    if (shouldNotAddMutation(MUTATION_TYPE.DELETE, table)) {
+      mutations[`delete${upperFirst(table)}`] = {
+        type: deletedId,
+        args: {
+          id: { type: GraphQLNonNull(GraphQLInt) }
+        },
+        resolve: createResolvers(DB_TABLES[table].model).deleteResolver
+      };
+    }
+    
   });
   return mutations;
 };
