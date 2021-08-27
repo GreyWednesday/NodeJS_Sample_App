@@ -9,7 +9,7 @@ import { cabMutations } from './models/cabs';
 
 const shouldNotAddMutation = (type, table) => {
   if (type === MUTATION_TYPE.CREATE) {
-    const negateTablesList = [users];
+    const negateTablesList = ['users'];
     return !negateTablesList.includes(table);
   }
 
