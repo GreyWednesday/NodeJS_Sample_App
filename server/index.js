@@ -57,7 +57,7 @@ export const init = () => {
   //   })
   // );
 
-  //app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
+  app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
 
   app.use(
     '/graphql',

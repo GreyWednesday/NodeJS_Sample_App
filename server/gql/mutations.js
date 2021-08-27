@@ -3,6 +3,7 @@ import upperFirst from 'lodash/upperFirst';
 import { deletedId, deleteUsingId, updateUsingId } from '@database/dbUtils';
 import { addressMutations } from '@gql/models/addresses';
 import { userMutations } from '@gql/models/users';
+import { MUTATION_TYPE } from '@utils/constants';
 import { bookingMutations } from './models/bookings';
 import { cabMutations } from './models/cabs';
 
