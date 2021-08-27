@@ -68,37 +68,6 @@ const CabConnection = createConnection({
 
     return findOptions;
   },
-  after: async (context, args) => {
-    const userId = args?.userId;
-    const cabId = context?.edges[0]?.node?.id;
-    let startingPoint;
-    const destination = args?.destination;
-    const status = 'Booked';
-    let result;
-    if (userId && cabId && destination) {
-      if (args?.userId && !args?.startingPoint) {
-        startingPoint = args.where.addressId;
-      } else {
-        startingPoint = args.startingPoint;
-      }
-
-      result = await db.bookings.create({
-        userId,
-        cabId,
-        startingPoint,
-        destination,
-        status
-      });
-
-      await db.cabs.update(
-        { bookingId: result?.dataValues ? result.dataValues.id : result[0].id },
-        { where: { id: context?.edges[0]?.node?.dataValues?.id } }
-      );
-      context.edges[0].node.dataValues.bookingId = result?.dataValues ? result.dataValues.id : result[0].id;
-      return context;
-    }
-    return context;
-  },
   ...totalConnectionFields
 });
 

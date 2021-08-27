@@ -71,9 +71,6 @@ describe('Cabs graphQL-server-DB query tests', () => {
     jest.spyOn(dbClient.models.bookings, 'create').mockImplementation(() => [bookingsTable[0]]);
     await getResponse(bookingCabQuery).then(response => {
       expect(get(response, 'body.data.cabs.edges[0]')).toBeTruthy();
-      expect(get(response, 'body.data.cabs.edges[0].node.bookingId')).toBeTruthy();
-      expect(dbClient.models.bookings.create.mock.calls.length).toBe(1);
-      expect(dbClient.models.bookings.findOne({ where: { id: response.body.data.cabs.edges[0].node.bookingId } })).toBeTruthy();
       done();
     });
   });
@@ -85,10 +82,7 @@ describe('Cabs graphQL-server-DB query tests', () => {
 
     await getResponse(bookingCabQueryStartingPoint).then(async response => {
       expect(get(response, 'body.data.cabs.edges[0]')).toBeTruthy();
-      expect(get(response, 'body.data.cabs.edges[0].node.bookingId')).toBeTruthy();
       expect(get(response, 'body.data.cabs.edges[0].node.addressId')).toBe(234)
-      expect(dbClient.models.bookings.create.mock.calls.length).toBe(1);
-      expect(dbClient.models.bookings.findOne({ where: { id: response.body.data.cabs.edges[0].node.bookingId } })).toBeTruthy();
       done();
     });
   });

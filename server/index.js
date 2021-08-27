@@ -13,14 +13,11 @@ import { signUpRoute, signInRoute } from '@server/auth';
 import cluster from 'cluster';
 import os from 'os';
 import 'source-map-support/register';
+import authenticateToken from '@server/middleware/authenticate/index';
+
 // import redis from "redis";
 // import session from 'express-session';
 // import connectRedis from 'connect-redis';
-
-let superagent;
-if (typeof window !== 'undefined') {
-  superagent = require('superagent');
-}
 
 const totalCPUs = os.cpus().length;
 
@@ -92,34 +89,6 @@ export const init = () => {
     }
   };
   createBodyParsedRoutes([signUpRoute, signInRoute]);
-
-  app.use('/requestCabs/:USERID', (req, res) => {
-    const userId = req.params.USERID;
-    const query = `query findCabsNearMe {
-      users(limit: 5, offset: 0, where: {id: ${userId}}) {
-        edges {
-          cursor
-          node {
-            address_id
-          }
-        }
-      }
-    }`;
-    if (superagent !== undefined) {
-      console.log(typeof superagent);
-      let output;
-      superagent
-        .post('/graphql')
-        .send({ query })
-        .set('Accept', 'application/json')
-        .end((error, response) => {
-          output = response;
-        });
-      res.json(output);
-    } else {
-      res.send('<h1>DEBUGGING</h1>');
-    }
-  });
 
   app.use('/', (req, res) => {
     const message = 'Service up and running!';
