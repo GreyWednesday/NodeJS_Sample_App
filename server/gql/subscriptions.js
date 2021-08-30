@@ -55,10 +55,8 @@ export const SubscriptionRoot = new GraphQLObjectType({
       },
       subscribe: withFilter(
         () => pubsub.asyncIterator(SUBSCRIPTION_TOPICS.BOOKINGS),
-        (payload, variables) => {
-          return (payload.bookingsCreated.cabId === variables.cabId);
-        },
-      ),
+        (payload, variables) => payload.bookingsCreated.cabId === variables.cabId
+      )
     }
   }
 });

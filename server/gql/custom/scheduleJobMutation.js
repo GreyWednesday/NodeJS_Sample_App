@@ -28,7 +28,7 @@ export const scheduleJob = {
     return getQueue(QUEUE_NAMES.SCHEDULE_JOB)
       .add({ message: args.message }, { delay: args.scheduleIn })
       .then(job => {
-        // 2
+        // eslint-disable-next-line no-console
         console.log(`${moment()}::Job with id: ${job.id} scheduled in ${args.scheduleIn} milliseconds`);
         pubsub.publish(SUBSCRIPTION_TOPICS.NOTIFICATIONS, {
           notifications: args
@@ -36,9 +36,10 @@ export const scheduleJob = {
         return { success: true };
       })
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.log(err);
         return { success: false };
       });
   },
-  description: 'Schedule a job that will be executed in ${scheduleIn} milliseconds. This job will console ${message}.'
+  description: 'Schedule a job that will be executed in {scheduleIn} milliseconds. This job will console {message}.'
 };

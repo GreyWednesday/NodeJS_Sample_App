@@ -30,7 +30,7 @@ const query = `
 describe('User introspection tests', () => {
   it('should have the correct fields and types', async () => {
     const result = await graphqlSync({ schema, source: query });
-    const userFieldTypes= get(result, 'data.__type.fields');
+    const userFieldTypes = get(result, 'data.__type.fields');
     const hasCorrectFieldTypes = expectSameTypeNameOrKind(userFieldTypes, fields);
     expect(hasCorrectFieldTypes).toBeTruthy();
   });

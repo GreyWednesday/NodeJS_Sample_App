@@ -30,10 +30,10 @@ describe('Bookings graphQL-server-DB mutation tests', () => {
     await getResponse(createBookingMut).then(response => {
       const result = get(response, 'body.data.createBookings');
       expect(result).toMatchObject({
-        id: "1",
+        id: '1',
         userId: 1,
         cabId: 1,
-        status: "ABC",
+        status: 'ABC',
         startingPoint: 123,
         destination: 234
       });
