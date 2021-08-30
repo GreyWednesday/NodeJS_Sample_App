@@ -1,12 +1,13 @@
 import md5 from 'md5';
-import { getUserBySignIn, createUserBySignup } from '../auth';
+import { getUserBySignIn, createUserBySignup, getUserById } from '../auth';
 import db from '@database/models';
 
 describe('getUserBySign tests', () => {
+  const id = 1;
   const email = 'rohansaroha2@wednesday.is';
   const password = 1234;
   const md5Password = md5(password);
-  const user = { email: email, password: md5Password };
+  const user = { id: id, email: email, password: md5Password };
   let mock;
 
   beforeEach(() => {
@@ -18,6 +19,11 @@ describe('getUserBySign tests', () => {
     const res = await getUserBySignIn(email, password);
     expect(res).toEqual(user);
   });
+
+  it('should ensure that it returns user when supplied with an id', async () => {
+    const res = await getUserById(1);
+    expect(res).toEqual(user);
+  })
 });
 
 describe('creatUserBySignup tests', () => {
