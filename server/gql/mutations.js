@@ -1,19 +1,15 @@
 import { GraphQLInt, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 import upperFirst from 'lodash/upperFirst';
-import { productMutations } from '@gql/models/products';
-import { purchasedProductMutations } from '@gql/models/purchasedProducts';
-import { supplierMutations } from '@gql/models/suppliers';
 import { deletedId, deleteUsingId, updateUsingId } from '@database/dbUtils';
 import { addressMutations } from '@gql/models/addresses';
-import { storeMutations } from '@gql/models/stores';
-import { storeProductMutations } from '@gql/models/storeProducts';
-import { supplierProductMutations } from '@gql/models/supplierProducts';
 import { userMutations } from '@gql/models/users';
 import { MUTATION_TYPE } from '@utils/constants';
+import { bookingMutations } from './models/bookings';
+import { cabMutations } from './models/cabs';
 
 const shouldNotAddMutation = (type, table) => {
   if (type === MUTATION_TYPE.CREATE) {
-    const negateTablesList = ['users'];
+    const negateTablesList = [];
     return !negateTablesList.includes(table);
   }
 
@@ -23,10 +19,12 @@ const shouldNotAddMutation = (type, table) => {
   }
 
   if (type === MUTATION_TYPE.DELETE) {
-    const negateTablesList = ['users'];
+    const negateTablesList = [];
     return !negateTablesList.includes(table);
   }
 };
+
+
 
 export const createResolvers = model => ({
   createResolver: (parent, args, context, resolveInfo) => model.create(args),
@@ -34,14 +32,10 @@ export const createResolvers = model => ({
   deleteResolver: (parent, args, context, resolveInfo) => deleteUsingId(model, args)
 });
 export const DB_TABLES = {
-  product: productMutations,
-  purchasedProduct: purchasedProductMutations,
   address: addressMutations,
-  store: storeMutations,
-  storeProduct: storeProductMutations,
-  supplier: supplierMutations,
-  supplierProduct: supplierProductMutations,
-  users: userMutations
+  users: userMutations,
+  bookings: bookingMutations,
+  cabs: cabMutations
 };
 
 export const addMutations = () => {

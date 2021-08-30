@@ -34,18 +34,25 @@ describe('Address introspection tests', () => {
     const hasCorrectFieldTypes = expectSameTypeNameOrKind(addressFieldTypes, fields);
     expect(hasCorrectFieldTypes).toBeTruthy();
   });
-  it('should have a supplier connection', async () => {
+  it('should have an users connection', async () => {
     const result = await graphqlSync({ schema, source: query });
-    const addressFieldTypes = get(result, 'data.__type.fields');
-    const supplierField = addressFieldTypes.find(field => field.name === 'suppliers');
-    expect(supplierField.type.kind).toBe('OBJECT');
-    expect(supplierField.type.name).toBe('suppliersConnection');
+    const addressesFieldTypes = get(result, 'data.__type.fields');
+    const addressesField = addressesFieldTypes.find(field => field.name === 'users');
+    expect(addressesField.type.kind).toBe('OBJECT');
+    expect(addressesField.type.name).toBe('usersConnection');
   });
-  it('should have a store connection', async () => {
+  it('should have an cabs connection', async () => {
     const result = await graphqlSync({ schema, source: query });
-    const addressFieldTypes = get(result, 'data.__type.fields');
-    const storeField = addressFieldTypes.find(field => field.name === 'stores');
-    expect(storeField.type.kind).toBe('OBJECT');
-    expect(storeField.type.name).toBe('storeConnection');
+    const addressesFieldTypes = get(result, 'data.__type.fields');
+    const addressesField = addressesFieldTypes.find(field => field.name === 'cabs');
+    expect(addressesField.type.kind).toBe('OBJECT');
+    expect(addressesField.type.name).toBe('cabsConnection');
+  });
+  it('should have a bookings connection', async () => {
+    const result = await graphqlSync({ schema, source: query });
+    const addressesFieldTypes = get(result, 'data.__type.fields');
+    const addressesField = addressesFieldTypes.find(field => field.name === 'bookings');
+    expect(addressesField.type.kind).toBe('OBJECT');
+    expect(addressesField.type.name).toBe('bookingsConnection');
   });
 });

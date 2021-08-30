@@ -11,20 +11,6 @@ describe('Address graphQL-server-DB mutation tests', () => {
           id
           address1
           address2
-          stores {
-            edges {
-              node {
-                id 
-              }
-            }
-          }
-          suppliers {
-            edges {
-              node {
-                id 
-              }
-            }
-          }
         }
       }
       pageInfo {

@@ -25,6 +25,15 @@ export function getAttributes(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false
     },
+    addressId: {
+      field: 'address_id',
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'addresses',
+        key: 'id'
+      }
+    },
     createdAt: {
       field: 'created_at',
       type: DataTypes.DATE,
@@ -50,5 +59,12 @@ export function model(sequelize, DataTypes) {
     paranoid: true,
     timestamps: true
   });
+  
+  users.associate = function(models) {
+    users.belongsTo(models.addresses, {
+      targetKey: 'id',
+      sourceKey: 'address_id'
+    })
+  }
   return users;
 }

@@ -9,33 +9,30 @@ import { addressQueries } from './addresses';
 
 const { nodeInterface } = getNode();
 
-export const userFields = {
-  firstName: { type: GraphQLNonNull(GraphQLString) },
-  lastName: { type: GraphQLNonNull(GraphQLString) },
-  email: { type: GraphQLNonNull(GraphQLString) },
-  password: { type: GraphQLNonNull(GraphQLString) },
+export const cabFields = {
+  name: { type: GraphQLNonNull(GraphQLString) },
   addressId: { type: GraphQLInt }
 };
 
-const User = new GraphQLObjectType({
-  name: 'user',
+const Cab = new GraphQLObjectType({
+  name: 'cab',
   interfaces: [nodeInterface],
   fields: () => ({
-    ...userFields,
+    ...cabFields,
     id: { type: GraphQLNonNull(GraphQLID) },
     ...timestamps,
-    addresses: {
+    address: {
       ...addressQueries.query,
       resolve: (source, args, context, info) =>
-        addressQueries.query.resolve(source, args, { ...context, users: source.dataValues }, info)
+        addressQueries.query.resolve(source, args, { ...context, cabs: source.dataValues }, info)
     }
   })
 });
 
-const UserConnection = createConnection({
-  name: 'users',
-  target: db.users,
-  nodeType: User,
+const CabConnection = createConnection({
+  name: 'cabs',
+  target: db.cabs,
+  nodeType: Cab,
   before: (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
     findOptions.where = sequelizedWhere(findOptions.where, args.where);
@@ -44,24 +41,24 @@ const UserConnection = createConnection({
   ...totalConnectionFields
 });
 
-export { User };
+export { Cab };
 
-export const userQueries = {
+export const cabQueries = {
   args: {
     id: {
       type: GraphQLNonNull(GraphQLInt)
     }
   },
   query: {
-    type: User,
-    resolve: resolver(db.users, {
+    type: Cab,
+    resolve: resolver(db.cabs, {
       before: (findOptions, args, context) => {
         findOptions.include = findOptions.include || [];
         findOptions.where = findOptions.where || {};
         if (context?.bookings?.id) {
           findOptions.where = {
             ...findOptions.where,
-            id: context?.bookings?.userId
+            id: context?.bookings?.cabId
           };
         }
         return findOptions;
@@ -69,16 +66,16 @@ export const userQueries = {
     })
   },
   list: {
-    ...UserConnection,
-    resolve: UserConnection.resolve,
-    type: UserConnection.connectionType,
-    args: UserConnection.connectionArgs
+    ...CabConnection,
+    resolve: CabConnection.resolve,
+    type: CabConnection.connectionType,
+    args: CabConnection.connectionArgs
   },
-  model: db.users
+  model: db.cabs
 };
 
-export const userMutations = {
-  args: userFields,
-  type: User,
-  model: db.users
+export const cabMutations = {
+  args: cabFields,
+  type: Cab,
+  model: db.cabs
 };

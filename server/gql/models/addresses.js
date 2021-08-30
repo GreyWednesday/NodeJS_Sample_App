@@ -1,11 +1,12 @@
 import { GraphQLFloat, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
 import { getNode } from '@gql/node';
-import { createConnection } from 'graphql-sequelize';
-import { supplierQueries } from './suppliers';
+import { createConnection, resolver } from 'graphql-sequelize';
 import { timestamps } from './timestamps';
 import db from '@database/models';
-import { storeQueries } from '@gql/models/stores';
 import { totalConnectionFields } from '@utils/index';
+import { userQueries } from './users';
+import { cabQueries } from './cabs';
+import { bookingQueries } from './bookings';
 
 const { nodeInterface } = getNode();
 export const addressFields = {
@@ -32,15 +33,20 @@ const Address = new GraphQLObjectType({
   fields: () => ({
     ...addressFields,
     ...timestamps,
-    suppliers: {
-      ...supplierQueries.list,
+    users: {
+      ...userQueries.list,
       resolve: (source, args, context, info) =>
-        supplierQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+        userQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
     },
-    stores: {
-      ...storeQueries.list,
+    cabs: {
+      ...cabQueries.list,
       resolve: (source, args, context, info) =>
-        storeQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+        cabQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+    },
+    bookings: {
+      ...bookingQueries.list,
+      resolve: (source, args, context, info) =>
+        bookingQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
     }
   })
 });
@@ -51,20 +57,29 @@ const AddressConnection = createConnection({
   nodeType: Address,
   before: (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
-    if (context?.supplier?.id) {
+    if (context?.users?.id) {
       findOptions.include.push({
-        model: db.suppliers,
+        model: db.users,
         where: {
-          id: context.supplier.id
+          id: context.users.id
         }
       });
     }
 
-    if (context?.store?.id) {
+    if (context?.cabs?.id) {
       findOptions.include.push({
-        model: db.stores,
+        model: db.cabs,
         where: {
-          id: context.store.id
+          id: context.cabs.id
+        }
+      });
+    }
+
+    if (context?.bookings?.id) {
+      findOptions.include.push({
+        model: db.bookings,
+        where: {
+          id: context.booking.id
         }
       });
     }
@@ -83,7 +98,26 @@ export const addressQueries = {
     }
   },
   query: {
-    type: Address
+    type: Address,
+    resolve: resolver(db.addresses, {
+      before: (findOptions, args, context) => {
+        findOptions.include = findOptions.include || [];
+        findOptions.where = findOptions.where || {};
+        if (context?.users?.id) {
+          findOptions.where = {
+            ...findOptions.where,
+            id: context?.users?.addressId
+          };
+        }
+        if (context?.cabs?.id) {
+          findOptions.where = {
+            ...findOptions.where,
+            id: context?.cabs?.addressId
+          }
+        }
+        return findOptions;
+      }
+    })
   },
   list: {
     ...AddressConnection,

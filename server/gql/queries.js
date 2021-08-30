@@ -4,26 +4,18 @@ import pluralize from 'pluralize';
 import { defaultListArgs, defaultArgs, resolver } from 'graphql-sequelize';
 import { Aggregate } from '@gql/models/aggregate';
 import { getNode } from '@gql/node';
-import { Product, productQueries } from '@gql/models/products';
 import { addressQueries } from '@gql/models/addresses';
-import { purchasedProductQueries } from '@gql/models/purchasedProducts';
-import { storeProductQueries } from '@gql/models/storeProducts';
-import { storeQueries } from '@gql/models/stores';
-import { supplierQueries } from '@gql/models/suppliers';
-import { supplierProductQueries } from '@gql/models/supplierProducts';
-import { userQueries } from '@gql/models/users';
+import { User, userQueries } from '@gql/models/users';
+import { bookingQueries } from './models/bookings';
+import { cabQueries } from './models/cabs';
 
 const { nodeField, nodeTypeMapper } = getNode();
 
 const DB_TABLES = {
-  product: productQueries,
   address: addressQueries,
-  purchasedProduct: purchasedProductQueries,
-  storeProduct: storeProductQueries,
-  store: storeQueries,
-  supplier: supplierQueries,
-  supplierProduct: supplierProductQueries,
-  user: userQueries
+  user: userQueries,
+  booking: bookingQueries,
+  cab: cabQueries
 };
 
 export const addQueries = () => {
@@ -54,7 +46,7 @@ export const addQueries = () => {
 };
 
 nodeTypeMapper.mapTypes({
-  products: Product
+  users: User
 });
 export const QueryRoot = new GraphQLObjectType({
   name: 'Query',
