@@ -38,6 +38,16 @@ module.exports = (options = {}) => ({
         }
       },
       {
+        test: /node_modules\/bull\/lib\/commands\/index\.js$/,
+        use: {
+          loader: 'string-replace-loader',
+          options: {
+            search: '__dirname',
+            replace: `"${path.dirname(require.resolve('bull'))}/lib/commands"`
+          }
+        }
+      },
+      {
         test: /\.(eot|otf|ttf|woff|woff2)$/,
         use: 'file-loader'
       },
@@ -127,6 +137,9 @@ module.exports = (options = {}) => ({
     },
     extensions: ['.js', '.jsx', '.react.js'],
     mainFields: ['browser', 'jsnext:main', 'main']
+  },
+  experiments: {
+    topLevelAwait: true,
   },
   target: 'node'
 });

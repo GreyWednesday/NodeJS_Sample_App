@@ -56,11 +56,8 @@ const CabConnection = createConnection({
       } else {
         currentLocation = args?.startingPoint
       }
-      if (args?.where) {
-        args.where.addressId = currentLocation;
-      } else {
-        args.where = { addressId: currentLocation };
-      }
+      args.where = { ...args.where, addressId: currentLocation };
+      
       findOptions.where = sequelizedWhere(findOptions.where, args.where);
     } else {
       findOptions.where = sequelizedWhere(findOptions.where, args.where);
