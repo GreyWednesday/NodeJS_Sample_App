@@ -1,16 +1,20 @@
 import { GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
 import { getNode } from '@gql/node';
-import { createConnection } from 'graphql-sequelize';
+import { createConnection, resolver } from 'graphql-sequelize';
 import { timestamps } from './timestamps';
 import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
+import { addressQueries } from './addresses';
 
 const { nodeInterface } = getNode();
 
 export const userFields = {
   firstName: { type: GraphQLNonNull(GraphQLString) },
-  lastName: { type: GraphQLNonNull(GraphQLString) }
+  lastName: { type: GraphQLNonNull(GraphQLString) },
+  email: { type: GraphQLNonNull(GraphQLString) },
+  password: { type: GraphQLNonNull(GraphQLString) },
+  addressId: { type: GraphQLInt }
 };
 
 const User = new GraphQLObjectType({
@@ -19,13 +23,11 @@ const User = new GraphQLObjectType({
   fields: () => ({
     ...userFields,
     id: { type: GraphQLNonNull(GraphQLID) },
-    email: { type: GraphQLNonNull(GraphQLString) },
-    addressId: { type: GraphQLInt},
     ...timestamps,
     addresses: {
-      ...addressQueries.list,
+      ...addressQueries.query,
       resolve: (source, args, context, info) =>
-      addressQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+        addressQueries.query.resolve(source, args, { ...context, users: source.dataValues }, info)
     }
   })
 });
@@ -51,7 +53,20 @@ export const userQueries = {
     }
   },
   query: {
-    type: User
+    type: User,
+    resolve: resolver(db.users, {
+      before: (findOptions, args, context) => {
+        findOptions.include = findOptions.include || [];
+        findOptions.where = findOptions.where || {};
+        if (context?.bookings?.id) {
+          findOptions.where = {
+            ...findOptions.where,
+            id: context?.bookings?.userId
+          };
+        }
+        return findOptions;
+      }
+    })
   },
   list: {
     ...UserConnection,

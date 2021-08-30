@@ -1,29 +1,30 @@
 import { GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
 import { getNode } from '@gql/node';
-import { createConnection } from 'graphql-sequelize';
+import { createConnection, resolver } from 'graphql-sequelize';
 import { timestamps } from './timestamps';
 import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
+import { addressQueries } from './addresses';
 
 const { nodeInterface } = getNode();
 
 export const cabFields = {
   name: { type: GraphQLNonNull(GraphQLString) },
+  addressId: { type: GraphQLInt }
 };
 
 const Cab = new GraphQLObjectType({
-  name: 'Cab',
+  name: 'cab',
   interfaces: [nodeInterface],
   fields: () => ({
     ...cabFields,
     id: { type: GraphQLNonNull(GraphQLID) },
-    addressId: { type: GraphQLInt},
     ...timestamps,
-    addresses: {
-      ...addressQueries.list,
+    address: {
+      ...addressQueries.query,
       resolve: (source, args, context, info) =>
-      addressQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+        addressQueries.query.resolve(source, args, { ...context, cabs: source.dataValues }, info)
     }
   })
 });
@@ -49,7 +50,20 @@ export const cabQueries = {
     }
   },
   query: {
-    type: Cab
+    type: Cab,
+    resolve: resolver(db.cabs, {
+      before: (findOptions, args, context) => {
+        findOptions.include = findOptions.include || [];
+        findOptions.where = findOptions.where || {};
+        if (context?.bookings?.id) {
+          findOptions.where = {
+            ...findOptions.where,
+            id: context?.bookings?.cabId
+          };
+        }
+        return findOptions;
+      }
+    })
   },
   list: {
     ...CabConnection,

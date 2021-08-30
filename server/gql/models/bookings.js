@@ -6,28 +6,33 @@ import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
 import { addressQueries } from './addresses';
+import { userQueries } from './users';
+import { cabQueries } from './cabs';
 
 const { nodeInterface } = getNode();
 
 export const bookingFields = {
+  userId: { type: GraphQLInt },
+  cabId: { type: GraphQLInt },
   status: { type: GraphQLNonNull(GraphQLString) }
 };
 
 const Booking = new GraphQLObjectType({
-  name: 'Booking',
+  name: 'booking',
   interfaces: [nodeInterface],
   fields: () => ({
     ...bookingFields,
     id: { type: GraphQLNonNull(GraphQLID) },
-    userId: { type: GraphQLInt },
-    cabId: { type: GraphQLInt },
-    email: { type: GraphQLNonNull(GraphQLString) },
-    addressId: { type: GraphQLInt },
     ...timestamps,
-    addresses: {
-      ...addressQueries.list,
+    users: {
+      ...userQueries.query,
       resolve: (source, args, context, info) =>
-      addressQueries.list.resolve(source, args, { ...context, address: source.dataValues }, info)
+        userQueries.query.resolve(source, args, { ...context, bookings: source.dataValues }, info)
+    },
+    cabs: {
+      ...cabQueries.query,
+      resolve: (source, args, context, info) =>
+        cabQueries.query.resolve(source, args, { ...context, bookings: source.dataValues }, info)
     }
   })
 });
