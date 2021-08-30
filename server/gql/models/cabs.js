@@ -3,6 +3,7 @@ import { getNode } from '@gql/node';
 import { createConnection, resolver } from 'graphql-sequelize';
 import { timestamps } from './timestamps';
 import db from '@database/models';
+import { getUserById } from '@daos/auth';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
 import { addressQueries } from './addresses';
@@ -49,9 +50,7 @@ const CabConnection = createConnection({
     let currentLocation;
     if (args?.userId) {
       if (!args?.startingPoint) {
-        const user = await db.users.findOne({
-          where: { id: args.userId }
-        });
+        const user = await getUserById(args.userId);
         currentLocation = user.dataValues.addressId;
       } else {
         currentLocation = args?.startingPoint;

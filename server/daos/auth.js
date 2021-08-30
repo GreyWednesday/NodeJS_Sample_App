@@ -13,6 +13,13 @@ export const getUserBySignIn = async (email, password) => {
   }
 };
 
+export const getUserById = async userId => {
+  const user = await db.users.findOne({
+    where: { id: userId }
+  });
+  return user;
+};
+
 export const createUserBySignup = async (firstName, lastName, email, password, addressId) => {
   const encryptedPassword = await createPassword(password);
   return await db.users.create({
