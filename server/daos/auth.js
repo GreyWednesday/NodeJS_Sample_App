@@ -13,9 +13,9 @@ export const getUserBySignIn = async (email, password) => {
   }
 };
 
-export const getUserById = async (userId) => {
+export const getUserById = async userId => {
   const user = await db.users.findOne({
-    where: { id: userId}
+    where: { id: userId }
   });
   return user;
 };

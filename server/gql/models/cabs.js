@@ -50,7 +50,7 @@ const CabConnection = createConnection({
     let currentLocation;
     if (args?.userId) {
       if (!args?.startingPoint) {
-        const user = await getUserById(args.userId)
+        const user = await getUserById(args.userId);
         currentLocation = user.dataValues.addressId;
       } else {
         currentLocation = args?.startingPoint;

@@ -23,7 +23,7 @@ describe('getUserBySign tests', () => {
   it('should ensure that it returns user when supplied with an id', async () => {
     const res = await getUserById(1);
     expect(res).toEqual(user);
-  })
+  });
 });
 
 describe('creatUserBySignup tests', () => {

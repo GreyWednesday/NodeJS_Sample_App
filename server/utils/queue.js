@@ -18,12 +18,14 @@ export const QUEUE_NAMES = {
 // 2
 export const QUEUE_PROCESSORS = {
   [QUEUE_NAMES.SCHEDULE_JOB]: (job, done) => {
+    // eslint-disable-next-line no-console
     console.log(`${moment()}::Job with id: ${job.id} is being executed.\n`, {
       message: job.data.message
     });
     done();
   },
   [QUEUE_NAMES.EVERY_MINUTE_CRON]: (job, done) => {
+    // eslint-disable-next-line no-console
     console.log(`publishing to ${SUBSCRIPTION_TOPICS.NOTIFICATIONS}`);
     pubsub.publish(SUBSCRIPTION_TOPICS.NOTIFICATIONS, {
       notifications: {
@@ -36,6 +38,7 @@ export const QUEUE_PROCESSORS = {
 };
 // 3
 export const initQueues = () => {
+  // eslint-disable-next-line no-console
   console.log('init queues');
   Object.keys(QUEUE_PROCESSORS).forEach(queueName => {
     // 4
@@ -48,6 +51,7 @@ export const initQueues = () => {
 export const getQueue = queueName => {
   if (!queues[queueName]) {
     queues[queueName] = new Bull(queueName, `redis://${process.env.REDIS_DOMAIN}:${process.env.REDIS_PORT}`);
+    // eslint-disable-next-line no-console
     console.log('created queue: ', queueName, `redis://${process.env.REDIS_DOMAIN}:${process.env.REDIS_PORT}`);
   }
   return queues[queueName];
