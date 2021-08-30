@@ -6,8 +6,8 @@ import { Aggregate } from '@gql/models/aggregate';
 import { getNode } from '@gql/node';
 import { addressQueries } from '@gql/models/addresses';
 import { User, userQueries } from '@gql/models/users';
-import { bookingQueries } from './models/bookings';
-import { cabQueries } from './models/cabs';
+import { bookingQueries } from '@gql/models/bookings';
+import { cabQueries } from '@gql/models/cabs';
 
 const { nodeField, nodeTypeMapper } = getNode();
 

@@ -17,6 +17,12 @@ export const userFields = {
   addressId: { type: GraphQLInt }
 };
 
+export const userArgs = {
+  userId: {
+    type: GraphQLInt
+  }
+};
+
 const User = new GraphQLObjectType({
   name: 'user',
   interfaces: [nodeInterface],

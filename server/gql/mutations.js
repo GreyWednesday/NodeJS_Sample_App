@@ -9,7 +9,7 @@ import { cabMutations } from './models/cabs';
 
 const shouldNotAddMutation = (type, table) => {
   if (type === MUTATION_TYPE.CREATE) {
-    const negateTablesList = [];
+    const negateTablesList = ['users'];
     return !negateTablesList.includes(table);
   }
 
@@ -24,13 +24,12 @@ const shouldNotAddMutation = (type, table) => {
   }
 };
 
-
-
 export const createResolvers = model => ({
   createResolver: (parent, args, context, resolveInfo) => model.create(args),
   updateResolver: (parent, args, context, resolveInfo) => updateUsingId(model, args),
   deleteResolver: (parent, args, context, resolveInfo) => deleteUsingId(model, args)
 });
+
 export const DB_TABLES = {
   address: addressMutations,
   users: userMutations,
@@ -58,7 +57,7 @@ export const addMutations = () => {
         resolve: createResolvers(DB_TABLES[table].model).updateResolver
       };
     }
-
+    
     if (shouldNotAddMutation(MUTATION_TYPE.DELETE, table)) {
       mutations[`delete${upperFirst(table)}`] = {
         type: deletedId,
@@ -68,6 +67,7 @@ export const addMutations = () => {
         resolve: createResolvers(DB_TABLES[table].model).deleteResolver
       };
     }
+    
   });
   return mutations;
 };

@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import { usersTable } from '@server/utils/testUtils/mockData';
 import { getResponse } from '@utils/testUtils';
 
-describe('Products graphQL-server-DB pagination tests', () => {
+describe('Users graphQL-server-DB pagination tests', () => {
   const usersQuery = `
   query {
     users (first: 1, limit: 1, offset: 0){

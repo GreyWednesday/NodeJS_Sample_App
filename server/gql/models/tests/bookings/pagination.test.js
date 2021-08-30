@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import { getResponse } from '@utils/testUtils';
 import { bookingsTable } from '@server/utils/testUtils/mockData';
 
-describe('Products graphQL-server-DB pagination tests', () => {
+describe('Bookings graphQL-server-DB pagination tests', () => {
   const usersQuery = `
   query {
     bookings (first: 1, limit: 1, offset: 0){
@@ -12,6 +12,8 @@ describe('Products graphQL-server-DB pagination tests', () => {
           userId
           cabId
           status
+          startingPoint
+          destination
         }
       }
       pageInfo {
@@ -32,7 +34,9 @@ describe('Products graphQL-server-DB pagination tests', () => {
         id: bookingsTable[0].id,
         userId: parseInt(bookingsTable[0].userId),
         cabId: parseInt(bookingsTable[0].cabId),
-        status: bookingsTable[0].status
+        status: bookingsTable[0].status,
+        startingPoint: parseInt(bookingsTable[0].startingPoint),
+        destination: parseInt(bookingsTable[0].destination)
       });
       done();
     });

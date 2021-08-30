@@ -13,12 +13,13 @@ export const getUserBySignIn = async (email, password) => {
   }
 };
 
-export const createUserBySignup = async (firstName, lastName, email, password) => {
+export const createUserBySignup = async (firstName, lastName, email, password, addressId) => {
   const encryptedPassword = await createPassword(password);
   return await db.users.create({
     firstName,
     lastName,
     email,
-    password: encryptedPassword
+    password: encryptedPassword,
+    addressId
   });
 };

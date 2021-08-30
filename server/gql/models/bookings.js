@@ -5,9 +5,9 @@ import { timestamps } from './timestamps';
 import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
-import { addressQueries } from './addresses';
 import { userQueries } from './users';
 import { cabQueries } from './cabs';
+import { userArgs } from './users';
 
 const { nodeInterface } = getNode();
 
@@ -17,11 +17,21 @@ export const bookingFields = {
   status: { type: GraphQLNonNull(GraphQLString) }
 };
 
+const locationArgs = {
+  startingPoint: {
+    type: GraphQLInt
+  },
+  destination: {
+    type: GraphQLNonNull(GraphQLInt)
+  }
+};
+
 const Booking = new GraphQLObjectType({
   name: 'booking',
   interfaces: [nodeInterface],
   fields: () => ({
     ...bookingFields,
+    ...locationArgs,
     id: { type: GraphQLNonNull(GraphQLID) },
     ...timestamps,
     users: {
@@ -43,7 +53,18 @@ const BookingConnection = createConnection({
   nodeType: Booking,
   before: (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
-    findOptions.where = sequelizedWhere(findOptions.where, args.where);
+
+    if (args?.userId) {
+      if (args?.where) {
+        args.where['userId'] = args.userId;
+      } else {
+        args.where = { userId: args.userId };
+      }
+      findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    } else {
+      findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    }
+
     return findOptions;
   },
   ...totalConnectionFields
@@ -58,19 +79,26 @@ export const bookingQueries = {
     }
   },
   query: {
-    type: Booking
+    type: Booking,
+    resolve: BookingConnection.resolve
   },
   list: {
     ...BookingConnection,
     resolve: BookingConnection.resolve,
     type: BookingConnection.connectionType,
-    args: BookingConnection.connectionArgs
+    args: {
+      ...BookingConnection.connectionArgs,
+      ...userArgs
+    }
   },
   model: db.bookings
 };
 
 export const bookingMutations = {
-  args: bookingFields,
+  args: {
+    ...bookingFields,
+    ...locationArgs
+  },
   type: Booking,
   model: db.bookings
 };

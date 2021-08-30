@@ -6,13 +6,24 @@ import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
 import { addressQueries } from './addresses';
+import { userArgs } from './users';
 
 const { nodeInterface } = getNode();
 
 export const cabFields = {
   name: { type: GraphQLNonNull(GraphQLString) },
-  addressId: { type: GraphQLInt }
+  addressId: { type: GraphQLInt },
+  bookingId: { type: GraphQLInt }
 };
+
+const cabLocationArgs = {
+  startingPoint: {
+    type: GraphQLInt
+  },
+  destination: {
+    type: GraphQLInt
+  }
+}
 
 const Cab = new GraphQLObjectType({
   name: 'cab',
@@ -33,9 +44,28 @@ const CabConnection = createConnection({
   name: 'cabs',
   target: db.cabs,
   nodeType: Cab,
-  before: (findOptions, args, context) => {
+  before: async (findOptions, args, context) => {
     findOptions.include = findOptions.include || [];
-    findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    let currentLocation;
+    if (args?.userId) {
+      if (!args?.startingPoint) {
+        const user = await db.users.findOne({
+          where: { id: args.userId }
+        });
+        currentLocation = user.dataValues.addressId;
+      } else {
+        currentLocation = args?.startingPoint
+      }
+      if (args?.where) {
+        args.where.addressId = currentLocation;
+      } else {
+        args.where = { addressId: currentLocation };
+      }
+      findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    } else {
+      findOptions.where = sequelizedWhere(findOptions.where, args.where);
+    }
+
     return findOptions;
   },
   ...totalConnectionFields
@@ -69,7 +99,11 @@ export const cabQueries = {
     ...CabConnection,
     resolve: CabConnection.resolve,
     type: CabConnection.connectionType,
-    args: CabConnection.connectionArgs
+    args: {
+      ...CabConnection.connectionArgs,
+      ...userArgs,
+      ...cabLocationArgs
+    }
   },
   model: db.cabs
 };
