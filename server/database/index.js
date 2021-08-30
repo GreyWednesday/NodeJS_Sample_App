@@ -11,6 +11,7 @@ export const getClient = () => {
         dialect: 'postgres'
       });
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error({ err });
       throw err;
     }
@@ -21,12 +22,14 @@ export const connect = async () => {
   client = getClient();
   try {
     await client.authenticate();
+    // eslint-disable-next-line no-console
     console.log('Connection has been established successfully.\n', {
       db: process.env.POSTGRES_DB,
       user: process.env.POSTGRES_USER,
       host: process.env.POSTGRES_HOST
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Unable to connect to the database:', error);
     throw error;
   }

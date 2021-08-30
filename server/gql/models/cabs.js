@@ -23,7 +23,7 @@ const cabLocationArgs = {
   destination: {
     type: GraphQLInt
   }
-}
+};
 
 const Cab = new GraphQLObjectType({
   name: 'cab',
@@ -54,13 +54,10 @@ const CabConnection = createConnection({
         });
         currentLocation = user.dataValues.addressId;
       } else {
-        currentLocation = args?.startingPoint
+        currentLocation = args?.startingPoint;
       }
-      if (args?.where) {
-        args.where.addressId = currentLocation;
-      } else {
-        args.where = { addressId: currentLocation };
-      }
+      args.where = { ...args.where, addressId: currentLocation };
+
       findOptions.where = sequelizedWhere(findOptions.where, args.where);
     } else {
       findOptions.where = sequelizedWhere(findOptions.where, args.where);

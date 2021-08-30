@@ -49,7 +49,7 @@ describe('Cabs graphQL-server-DB query tests', () => {
       }
     }
   }
-  `
+  `;
 
   it('should request for address id related to the user', async done => {
     const dbClient = mockDBClient();
@@ -82,7 +82,7 @@ describe('Cabs graphQL-server-DB query tests', () => {
 
     await getResponse(bookingCabQueryStartingPoint).then(async response => {
       expect(get(response, 'body.data.cabs.edges[0]')).toBeTruthy();
-      expect(get(response, 'body.data.cabs.edges[0].node.addressId')).toBe(234)
+      expect(get(response, 'body.data.cabs.edges[0].node.addressId')).toBe(234);
       done();
     });
   });

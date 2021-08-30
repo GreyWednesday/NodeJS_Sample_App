@@ -9,7 +9,7 @@ module.exports = {
       destination: 1 + parseInt(Math.random() * 1999),
       status: faker.commerce.color()
     }));
-    return queryInterface.bulkInsert('bookings', arr, {})
+    return queryInterface.bulkInsert('bookings', arr, {});
   },
   down: queryInterface => queryInterface.bulkDelete('bookings', null, {})
-}
+};

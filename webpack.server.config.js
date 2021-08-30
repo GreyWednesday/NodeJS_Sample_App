@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 const dotEnvFile =
   process.env.ENVIRONMENT_NAME === 'production' ? `.env` : `.env.${process.env.ENVIRONMENT_NAME || 'local'}`;
 
+// eslint-disable-next-line no-console
 console.log({ dotEnvFile });
 
 const env = dotenv.config({ path: dotEnvFile }).parsed;
@@ -35,6 +36,16 @@ module.exports = (options = {}) => ({
         use: {
           loader: 'babel-loader',
           options: options.babelQuery
+        }
+      },
+      {
+        test: /node_modules\/bull\/lib\/commands\/index\.js$/,
+        use: {
+          loader: 'string-replace-loader',
+          options: {
+            search: '__dirname',
+            replace: `"${path.dirname(require.resolve('bull'))}/lib/commands"`
+          }
         }
       },
       {
@@ -127,6 +138,9 @@ module.exports = (options = {}) => ({
     },
     extensions: ['.js', '.jsx', '.react.js'],
     mainFields: ['browser', 'jsnext:main', 'main']
+  },
+  experiments: {
+    topLevelAwait: true
   },
   target: 'node'
 });

@@ -5,9 +5,8 @@ import { timestamps } from './timestamps';
 import db from '@database/models';
 import { totalConnectionFields } from '@utils/index';
 import { sequelizedWhere } from '@database/dbUtils';
-import { userQueries } from './users';
+import { userArgs, userQueries } from './users';
 import { cabQueries } from './cabs';
-import { userArgs } from './users';
 
 const { nodeInterface } = getNode();
 
@@ -56,7 +55,7 @@ const BookingConnection = createConnection({
 
     if (args?.userId) {
       if (args?.where) {
-        args.where['userId'] = args.userId;
+        args.where.userId = args.userId;
       } else {
         args.where = { userId: args.userId };
       }
