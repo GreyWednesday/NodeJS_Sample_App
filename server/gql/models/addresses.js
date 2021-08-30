@@ -113,7 +113,7 @@ export const addressQueries = {
           findOptions.where = {
             ...findOptions.where,
             id: context?.cabs?.addressId
-          }
+          };
         }
         return findOptions;
       }

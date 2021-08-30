@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 const dotEnvFile =
   process.env.ENVIRONMENT_NAME === 'production' ? `.env` : `.env.${process.env.ENVIRONMENT_NAME || 'local'}`;
 
+// eslint-disable-next-line no-console
 console.log({ dotEnvFile });
 
 const env = dotenv.config({ path: dotEnvFile }).parsed;
@@ -139,7 +140,7 @@ module.exports = (options = {}) => ({
     mainFields: ['browser', 'jsnext:main', 'main']
   },
   experiments: {
-    topLevelAwait: true,
+    topLevelAwait: true
   },
   target: 'node'
 });

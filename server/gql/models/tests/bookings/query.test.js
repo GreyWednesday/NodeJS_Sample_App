@@ -3,7 +3,7 @@ import { usersTable, cabsTable } from '@server/utils/testUtils/mockData';
 import { getResponse, mockDBClient, resetAndMockDB } from '@utils/testUtils';
 
 describe('Bookings graphQL-server-DB query tests', () => {
-  let id = "1";
+  const id = '1';
   const bookingQuery = `
   query {
     booking (id: ${id}) {
@@ -45,7 +45,7 @@ describe('Bookings graphQL-server-DB query tests', () => {
     const dbClient = mockDBClient();
     resetAndMockDB(null, {}, dbClient);
     jest.spyOn(dbClient.models.users, 'findOne').mockImplementation(() => [usersTable[0]]);
-    jest.spyOn(dbClient.models.cabs, 'findOne').mockImplementation(() => [cabsTable[0]])
+    jest.spyOn(dbClient.models.cabs, 'findOne').mockImplementation(() => [cabsTable[0]]);
     await getResponse(bookingQuery).then(response => {
       expect(get(response, 'body.data.booking')).toBeTruthy();
       // check if users/cabs .findOne is being called once
@@ -54,7 +54,7 @@ describe('Bookings graphQL-server-DB query tests', () => {
       // check if users/cabs .findOne is being called with the correct whereclause
       expect(dbClient.models.users.findOne.mock.calls[0][0].where).toEqual({ id: id });
       expect(dbClient.models.cabs.findOne.mock.calls[0][0].where).toEqual({ id: id });
-      
+
       done();
     });
   });

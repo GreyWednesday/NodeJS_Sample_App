@@ -1,11 +1,6 @@
 import isNil from 'lodash/isNil';
 import set from 'lodash/set';
-import {
-  addressesTable,
-  usersTable,
-  cabsTable,
-  bookingsTable
-} from '@server/utils/testUtils/mockData';
+import { addressesTable, usersTable, cabsTable, bookingsTable } from '@server/utils/testUtils/mockData';
 import sequelize from 'sequelize';
 import request from 'supertest';
 import logger from '@middleware/logger/index';

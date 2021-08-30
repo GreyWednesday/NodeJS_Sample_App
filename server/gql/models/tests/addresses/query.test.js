@@ -1,6 +1,5 @@
 import get from 'lodash/get';
-import { getResponse, mockDBClient, resetAndMockDB } from '@utils/testUtils';
-import { storesTable, suppliersTable } from '@utils/testUtils/mockData';
+import { getResponse } from '@utils/testUtils';
 
 describe('Address graphQL-server-DB query tests', () => {
   const id = 1;
@@ -14,7 +13,6 @@ describe('Address graphQL-server-DB query tests', () => {
   `;
 
   it('should be able to query the database', async done => {
-
     await getResponse(addressQuery).then(response => {
       expect(get(response, 'body.data.address')).toBeTruthy();
       done();

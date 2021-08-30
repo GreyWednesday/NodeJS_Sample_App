@@ -1,4 +1,4 @@
-import express, { response } from 'express';
+import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { GraphQLSchema, execute, subscribe } from 'graphql';
 import dotenv from 'dotenv';
@@ -13,7 +13,6 @@ import { signUpRoute, signInRoute } from '@server/auth';
 import cluster from 'cluster';
 import os from 'os';
 import 'source-map-support/register';
-import authenticateToken from '@server/middleware/authenticate/index';
 import cors from 'cors';
 import { SubscriptionServer } from 'subscriptions-transport-ws/dist/server';
 import 'whatwg-fetch';
@@ -21,7 +20,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { createServer } from 'http';
 import { SubscriptionRoot } from '@gql/subscriptions';
 import { initQueues } from '@utils/queue';
-import db from '@database/models';
+import authenticateToken from '@middleware/authenticate';
 
 // import redis from "redis";
 // import session from 'express-session';
@@ -66,7 +65,7 @@ export const init = async () => {
   //   })
   // );
 
-  //app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
+  app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
 
   app.use(
     '/graphql',
@@ -104,7 +103,7 @@ export const init = async () => {
     logger().info(message);
     res.json(message);
   });
-  
+
   /* istanbul ignore next */
 
   if (!isTestEnv()) {
@@ -123,6 +122,7 @@ export const init = async () => {
       process.on(signal, () => subscriptionServer.close());
     });
     httpServer.listen(9000, async () => {
+      // eslint-disable-next-line no-console
       console.log(`Server is now running on http://localhost:9000/graphql`);
     });
     initQueues();
@@ -132,8 +132,10 @@ export const init = async () => {
 logger().info({ ENV: process.env.NODE_ENV });
 
 if (!isTestEnv() && cluster.isMaster) {
+  /* eslint-disable no-console */
   console.log(`Number of CPUs is ${totalCPUs}`);
   console.log(`Master ${process.pid} is running`);
+  /* eslint-enable no-console */
 
   // Fork workers.
   for (let i = 0; i < totalCPUs; i++) {
@@ -141,8 +143,10 @@ if (!isTestEnv() && cluster.isMaster) {
   }
 
   cluster.on('exit', (worker, code, signal) => {
+    /* eslint-disable no-console */
     console.log(`worker ${worker.process.pid} died`);
     console.log("Let's fork another worker!");
+    /* eslint-enable no-console */
     cluster.fork();
   });
 } else {

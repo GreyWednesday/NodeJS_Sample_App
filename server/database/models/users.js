@@ -59,12 +59,12 @@ export function model(sequelize, DataTypes) {
     paranoid: true,
     timestamps: true
   });
-  
+
   users.associate = function(models) {
     users.belongsTo(models.addresses, {
       targetKey: 'id',
       sourceKey: 'address_id'
-    })
-  }
+    });
+  };
   return users;
 }

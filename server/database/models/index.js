@@ -13,7 +13,6 @@ db.users = require('@database/models/users').model(sequelize, Sequelize.DataType
 db.bookings = require('@database/models/bookings').model(sequelize, Sequelize.DataTypes);
 db.cabs = require('@database/models/cabs').model(sequelize, Sequelize.DataTypes);
 
-
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

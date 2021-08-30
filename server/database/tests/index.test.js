@@ -52,6 +52,7 @@ describe('connect', () => {
     jest.spyOn(console, 'log');
     await connect();
     expect(client.authenticate.mock.calls.length).toBe(1);
+    /* eslint-disable no-console */
     expect(console.log.mock.calls.length).toBe(1);
     expect(console.log.mock.calls.length).toBe(1);
     expect(console.log.mock.calls[0][0]).toBe('Connection has been established successfully.\n');
@@ -60,6 +61,7 @@ describe('connect', () => {
       user: process.env.POSTGRES_USER,
       host: process.env.POSTGRES_HOST
     });
+    /* eslint-enable no-console */
   });
 
   it('should throw an error if connection fails', async () => {

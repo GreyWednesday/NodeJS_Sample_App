@@ -2,7 +2,6 @@ import Bull from 'bull';
 import moment from 'moment';
 import { pubsub } from '@utils/pubsub';
 import { SUBSCRIPTION_TOPICS } from '@utils/constants';
-import db from '@database/models';
 
 const queues = {};
 // 1
